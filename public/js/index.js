@@ -4,7 +4,6 @@ const socket = io.connect() //conecion con el server
 function addNewMensaje() { //recibe los datos del cliente y de los inputs y los pas al server
     const inputEmail = document.getElementById('email')
     const inputMensaje = document.getElementById('mensaje')
-        console.log(inputEmail.value +' '+ inputMensaje.value+ ' '+'log del input');
 
         let today = new Date();
         let hora = today.getHours() + ':' + today.getMinutes()
@@ -25,8 +24,6 @@ function addNewMensaje() { //recibe los datos del cliente y de los inputs y los 
 }
 
 socket.on('messages', msjs =>{ //recibe los datos del server y los muestra
-
-    console.log(msjs,' ', 'log de los mensaje')
 
     if (msjs.length == 0) {
         

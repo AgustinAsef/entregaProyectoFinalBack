@@ -15,12 +15,14 @@
         <form action="/productos" method="post">
             <h5>Producto:</h5><input type="text", placeholder="Producto", name="name"/>
             <h5>Precio:</h5><input type="text", placeholder="Precio", name="price"/>
+            <h5>Stock:</h5><input type="text", placeholder="Stock del producto", name="stock"/>
+            <h5>Descripcion:</h5><input type="text", placeholder="Descripcion", name="description"/>
             <h5>Thumbnail:</h5><input type="text", placeholder="Ruta a imagen del producto", name="thumbnail"/> 
             <br>
             <button type="submit">Enviar</button>
         </form>
         <% products.forEach((prods) => { %> 
-        <p> <%= `Producto: ${prods.name}, Precio: ${prods.price}, ID: ${prods.id}` %> </p>
+        <p> <%= `Producto: ${prods.name}, Precio: ${prods.price}, Stock: ${prods.stock} , ID: ${prods.id}` %> </p>
         <% }) %>  
     </main>
 </body>

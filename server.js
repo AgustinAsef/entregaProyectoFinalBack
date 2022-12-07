@@ -18,9 +18,11 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.static('public'))
 
 //configuracion para traer archivos
-const Container = require('./container/container.js')
-const products = new Container('./container/products.json')
-const messages = new Container('./container/message.json')
+const ContainerProducts = require('./container/ContainerProducts.js')
+const ContainerCart = require('./container/ContainerCart.js')
+const products = new ContainerProducts('./container/products.json')
+const messages = new ContainerProducts('./container/message.json')
+const cart = new ContainerCart('./container/cart.json')
 
 //config de puerto
 const PORT = process.env.PORT || 8090
@@ -35,13 +37,14 @@ function mdl1(req, res, next) {
 
 //coneccion al server
 io.on('connection', socket => {
-    console.log('nuevo cliente conectado')
+    console.log(`nuevo cliente conectado, tu usuario es ${socket.id}`)
 //emite el array de mensajes
     messages.getAll().then(messages => {
      socket.emit('messages', messages)
     })
 //los recibe y los pushea al servidor
     socket.on('message', messagesData =>{
+    
     messages.save(messagesData),
 
     messages.getAll().then(messages => {
@@ -50,14 +53,75 @@ io.on('connection', socket => {
     })    
 })
 
-//ruta de productos y metodos
-app.get('/productos', (req, res)=>{
+//enrutador cart
+app.get('/cart', mdl1, (req, res)=>{//obtiene todos los carritos
+    cart.getAll().then(cart => {        
+        res.json(cart)
+    })
+})
+
+app.get('/:id/cart', (req, res)=>{//obtiene el carrito por su id y los productos guardados en el 
+    let {id} = req.params
+    cart.getById(id).then(cart => {            
+        res.json(cart)
+    })
+})
+
+app.post('/cart/:usuario', (req, res)=>{//crea un carrito y devuelve su id
+    let {usuario} = req.params
+    let today = new Date();
+    let fecha = today.getDate() + '-' + ( today.getMonth() + 1 ) + '-' +  today.getFullYear()
+    let id = Math.random()
+
+    let newCart ={
+        id: id,
+        usuario: usuario,
+        creationFech: fecha,
+        cart: []
+    }
+
+    cart.postNewCart(newCart).then(cart => {
+        res.json(newCart.id)
+    })
+    
+})
+
+app.post('/:id/cart/:idProduct', (req, res)=>{//introduce un producto al carrito por el id del producto (/:id = id del usuario o del carrito /cart/:idProduct = id del producto)
+    let {id, idProduct} = req.params
+    id= parseInt(id)
+    idProduct = parseInt(idProduct)                                 
+    products.getById(idProduct).then(prod =>{
+        cart.saveObjInCArt(id, prod).then(() =>{
+            res.json(`se agrego el producto correctamente`)
+        })
+    })
+})
+
+app.delete('/:id/cart', (req, res)=>{//elimina un carrito por su id
+    let {id} = req.params
+    id= parseInt(id)
+    cart.deleteCart(id).then(()=>{
+        res.json("se elimino el carrito")
+    })
+})
+
+app.delete('/:id/cart/:idProduct', (req, res)=>{//elimina un producto de un carrito por su id
+    let {id, idProduct} = req.params
+    id= parseInt(id)
+    idProduct = parseInt(idProduct)
+    cart.deleteObjInCart(id, idProduct).then(() =>{
+        res.json(`se elimino el producto correctamente`)
+    })
+})
+
+//enrutador productos
+ app.get('/productos', (req, res)=>{//obtiene todos los productos
     products.getAll().then(products => {
         res.render('main', {products})
     })
 })
 
-app.get('/productos/:id', (req, res)=>{
+app.get('/productos/:id', (req, res)=>{//obtiene los productos por id
     let {id} = req.params
     id = parseInt(id)
     products.getById(id).then(prod =>{
@@ -65,8 +129,8 @@ app.get('/productos/:id', (req, res)=>{
     })
 })
 
-app.post('/productos', mdl1, (req, res)=>{
-    let { name, price, thumbnail } = req.body 
+app.post('/productos', mdl1, (req, res)=>{ //crea los productos
+    let { name , price , thumbnail , stock , description } = req.body 
     let id
     products.getAll().then(products => {
         if (products.length == 0) {
@@ -75,13 +139,13 @@ app.post('/productos', mdl1, (req, res)=>{
             id = products.length +1
         }    
     })
-    let articulo ={ name : name, price : price, thumbnail : thumbnail} 
+    let articulo ={ name : name, price : price, stock: stock, description: description, thumbnail : thumbnail} 
     const newProduct = {...articulo, id}
     products.save(newProduct)
     res.redirect('/productos')
     })
     
-app.put('/productos/:id', mdl1, (req, res)=>{
+app.put('/productos/:id', mdl1, (req, res)=>{//modifica los productos por su id
     let { name, price, thumbnail } = req.body
     let { id } = req.params
     id = parseInt(id)
@@ -100,15 +164,14 @@ app.put('/productos/:id', mdl1, (req, res)=>{
          })
     })
 
-app.delete('/productos', mdl1, (req, res)=>{
+app.delete('/productos', mdl1, (req, res)=>{//elimina todos los productos
     products.deleteAll()
     })
     
-app.delete('/productos/:id', mdl1, (req, res)=>{
+app.delete('/productos/:id', mdl1, (req, res)=>{//elimina los productos por su id
     let {id} = req.params
     products.deleteById(id)
-    })
-
+    }) 
 
 //configuracion de incio del server y error
 const server = httpServer.listen(PORT, ()=>{

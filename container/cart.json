@@ -1,0 +1,73 @@
+[
+  {
+    "id": 9639335452909548,
+    "usuario": "Franco",
+    "creationFech": "6-12-2022",
+    "cart": [
+      {
+        "name": "ropa",
+        "price": 123445,
+        "stock": 3,
+        "description": "lorem lorem lorem lorem",
+        "thumbnail": "http",
+        "id": 1
+      },
+      {
+        "name": "estampado",
+        "price": 23123,
+        "stock": 3,
+        "description": "lorem lorem lorem lorem",
+        "thumbnail": "http",
+        "id": 2
+      },
+      {
+        "name": "camisa",
+        "price": 234,
+        "stock": 3,
+        "description": "lorem lorem lorem lorem",
+        "thumbnail": "http",
+        "id": 3
+      }
+    ]
+  },
+  {
+    "id": 9639323423909548,
+    "usuario": "Marcelo",
+    "creationFech": "6-12-2022",
+    "cart": [
+      {
+        "name": "camisa",
+        "price": 234,
+        "stock": 3,
+        "description": "lorem lorem lorem lorem",
+        "thumbnail": "http",
+        "id": 3
+      }
+    ]
+  },
+  {
+    "id": 963935882909547,
+    "usuario": "Agustin",
+    "creationFech": "6-12-2022",
+    "cart": [
+      {
+        "name": "remera",
+        "price": 123445,
+        "thumbnail": "http",
+        "id": 1
+      },
+      {
+        "name": "ropa",
+        "price": 123445,
+        "thumbnail": "http",
+        "id": 2
+      },
+      {
+        "name": "ropa",
+        "price": 123445,
+        "thumbnail": "http",
+        "id": 4
+      }
+    ]
+  }
+]

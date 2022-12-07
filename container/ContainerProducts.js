@@ -1,6 +1,6 @@
 const fs = require('fs').promises
 
-class Container{
+class ContainerProducts{
     constructor (path){
         this.path = path
     }
@@ -94,4 +94,4 @@ class Container{
     }
 }
 
-module.exports=Container
+module.exports=ContainerProducts

@@ -1,20 +1,42 @@
 [
   {
-    "name": "ropa",
-    "price": 123445,
+    "name": "remera",
+    "price": 3200,
+    "stock": 3,
+    "description": "lorem lorem lorem lorem",
     "thumbnail": "http",
     "id": 1
   },
   {
-    "name": "estampado",
-    "price": 23123,
+    "name": "camisa",
+    "price": 4500,
+    "stock": 5,
+    "description": "lorem lorem lorem lorem",
     "thumbnail": "http",
     "id": 2
   },
   {
-    "name": "camisa",
-    "price": 234,
+    "name": "pantalon",
+    "price": 2300,
+    "stock": 2,
+    "description": "lorem lorem lorem lorem",
     "thumbnail": "http",
     "id": 3
+  },
+  {
+    "name": "gorra",
+    "price": 1200,
+    "stock": 2,
+    "description": "lorem lorem lorem lorem",
+    "thumbnail": "http",
+    "id": 4
+  },
+  {
+    "name": "pantalon corto",
+    "price": "1500",
+    "stock": "5",
+    "description": "lorem lorem lorem",
+    "thumbnail": "http",
+    "id": 5
   }
 ]
