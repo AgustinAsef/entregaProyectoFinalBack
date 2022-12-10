@@ -71,7 +71,9 @@ app.post('/cart/:usuario', (req, res)=>{//crea un carrito y devuelve su id
     let {usuario} = req.params
     let today = new Date();
     let fecha = today.getDate() + '-' + ( today.getMonth() + 1 ) + '-' +  today.getFullYear()
-    let id = Math.random()
+    var randomId = Math.floor(Math.random()*10000000)
+    let id = randomId
+
 
     let newCart ={
         id: id,
