@@ -6,15 +6,14 @@ function addNewMensaje() { //recibe los datos del cliente y de los inputs y los 
     const inputMensaje = document.getElementById('mensaje')
 
         let today = new Date();
-        let hora = today.getHours() + ':' + today.getMinutes()
-        let fecha = today.getDate() + '-' + ( today.getMonth() + 1 ) + '-' +  today.getFullYear()
+        let hour = today.getHours() + ':' + today.getMinutes()
+        let creationFech = today.getDate() + '-' + ( today.getMonth() + 1 ) + '-' +  today.getFullYear()
 
         let inputMensajeArr = {
-            id: socket.id,
             autor: inputEmail.value,
             mensaje: inputMensaje.value,
-            fecha: fecha,
-            hora: hora
+            creationFech: creationFech,
+            hour: hour
         }
 
         document.getElementById('mensaje').value= ''

@@ -1,13 +1,20 @@
 //esto es servidor
-const express = require ('express')
-const {Server: HttpServer} = require('http')
-const {Server: IOServer} = require('socket.io')
+import express from "express"
+import productRoutes from "./routes/productsRouter.js"
+import ContainerMsj from "./container/ContainerMsg.js"
 
-const app = express()
+/* import cartRoutes from "./routes/cartRouter.js"
+ */
+const containerMsj = new ContainerMsj()
+
+
+const {Server: HttpServer} = require ('http')
+const {Server: IOServer} = require('socket.io') 
 
 const httpServer = new HttpServer(app)
 const io = new IOServer(httpServer)
 
+const app = express()
 //motor de plantilla
 app.set('view engine', 'ejs')
 app.set('views', './views')
@@ -16,44 +23,35 @@ app.set('views', './views')
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(express.static('public'))
+app.use("/productos", productRoutes)
 
-//configuracion para traer archivos
-const ContainerProducts = require('./container/ContainerProducts.js')
-const ContainerCart = require('./container/ContainerCart.js')
-const products = new ContainerProducts('./container/products.json')
-const messages = new ContainerProducts('./container/message.json')
-const cart = new ContainerCart('./container/cart.json')
-
-//config de puerto
 const PORT = process.env.PORT || 8090
 
-//Middleware
-function mdl1(req, res, next) {
-    if (req.query.rol !== "admin") {
-        res.status(500).send("Usuario no autorizado")
-    }
-    next()
-}
+app.listen(PORT, ()=>{
+    console.log('esta vivoooo!!')
+}) 
+
+app.on("error", error => console.log("error al crear el servidor"))
 
 //coneccion al server
 io.on('connection', socket => {
     console.log(`nuevo cliente conectado, tu usuario es ${socket.id}`)
 //emite el array de mensajes
-    messages.getAll().then(messages => {
+    containerMsj.getAll().then(messages => {
      socket.emit('messages', messages)
     })
 //los recibe y los pushea al servidor
     socket.on('message', messagesData =>{
     
-    messages.save(messagesData),
+    containerMsj.save(messagesData),
 
-    messages.getAll().then(messages => {
+    containerMsj.getAll().then(messages => {
         io.sockets.emit('messages', messages)
        })
     })    
 })
 
-//enrutador cart
+/* //enrutador cart
 app.get('/cart', mdl1, (req, res)=>{//obtiene todos los carritos
     cart.getAll().then(cart => {        
         res.json(cart)
@@ -73,7 +71,6 @@ app.post('/cart/:usuario', (req, res)=>{//crea un carrito y devuelve su id
     let fecha = today.getDate() + '-' + ( today.getMonth() + 1 ) + '-' +  today.getFullYear()
     var randomId = Math.floor(Math.random()*10000000)
     let id = randomId
-
 
     let newCart ={
         id: id,
@@ -114,70 +111,4 @@ app.delete('/:id/cart/:idProduct', (req, res)=>{//elimina un producto de un carr
     cart.deleteObjInCart(id, idProduct).then(() =>{
         res.json(`se elimino el producto correctamente`)
     })
-})
-
-//enrutador productos
- app.get('/productos', (req, res)=>{//obtiene todos los productos
-    products.getAll().then(products => {
-        res.render('main', {products})
-    })
-})
-
-app.get('/productos/:id', (req, res)=>{//obtiene los productos por id
-    let {id} = req.params
-    id = parseInt(id)
-    products.getById(id).then(prod =>{
-        res.json(prod)
-    })
-})
-
-app.post('/productos', mdl1, (req, res)=>{ //crea los productos
-    let { name , price , thumbnail , stock , description } = req.body 
-    let id
-    products.getAll().then(products => {
-        if (products.length == 0) {
-            id = 1
-        }else{
-            id = products.length +1
-        }    
-    })
-    let articulo ={ name : name, price : price, stock: stock, description: description, thumbnail : thumbnail} 
-    const newProduct = {...articulo, id}
-    products.save(newProduct)
-    res.redirect('/productos')
-    })
-    
-app.put('/productos/:id', mdl1, (req, res)=>{//modifica los productos por su id
-    let { name, price, thumbnail } = req.body
-    let { id } = req.params
-    id = parseInt(id)
-    let producto = { name : name, price : price, thumbnail : thumbnail}
-
-    products.getAll().then(newProductModifi=>{
-        let obj = newProductModifi.find(obj => obj.id === parseInt(id))
-        let index = newProductModifi.indexOf(obj)
-        let productModifi = {...producto, id}
-        if (!obj) {
-            res.json({msg: "no se encontro el producto"})
-            }else{
-                products.remplace(productModifi, index)
-                res.json({msg: "producto modificado con exito"})
-            }
-         })
-    })
-
-app.delete('/productos', mdl1, (req, res)=>{//elimina todos los productos
-    products.deleteAll()
-    })
-    
-app.delete('/productos/:id', mdl1, (req, res)=>{//elimina los productos por su id
-    let {id} = req.params
-    products.deleteById(id)
-    }) 
-
-//configuracion de incio del server y error
-const server = httpServer.listen(PORT, ()=>{
-    console.log('esta vivoooo!!')
-})
-
-server.on("error", error => console.log("error al crear el servidor"))
+}) */

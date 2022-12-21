@@ -1,78 +1,71 @@
-const express = require ('express')
+import { Router } from "express"
+import ContainerProducts from "../container/ContainerProducts.js"
 
-const { Router } = express;
-const productsRouter = new Router()
+const productRoutes = new Router()
+const containerProducts = new ContainerProducts()
 
-//configuracion para traer archivos
-const Container = require('../container/ContainerProducts')
-const products = new Container('../container/products.json')
 
-//Middleware
 function mdl1(req, res, next) {
     if (req.query.rol !== "admin") {
-        res.status(500).send("Usuario no autorizado para acceder a esta caracteristica")
+        res.status(500).send("Usuario no autorizado")
     }
     next()
 }
- 
-//ruta de productos y metodos
-productsRouter.get('/productos', (req, res)=>{
-    products.getAll().then(products => {
-        res.render('main', {products})
-    })
+
+productRoutes.get('/', async (req, res)=>{//obtiene todos los productos
+    try {
+        const prods = await containerProducts.getAll()
+        res.json(prods)
+    } catch (error) {
+        res.send(error)
+    }
+
 })
 
-productsRouter.get('/productos/:id', (req, res)=>{
-    let {id} = req.params
-    id = parseInt(id)
-    products.getById(id).then(prod =>{
+productRoutes.get('/:id', async (req, res)=>{//obtiene los productos por id
+    try {
+        let {id} = req.params
+        id = parseInt(id)
+        const prod = await containerProducts.getById(id)
         res.json(prod)
-    })
+    } catch (error) {
+        res.send(error)
+    }
 })
 
-productsRouter.post('/productos', mdl1, (req, res)=>{
-    let { name, price, thumbnail } = req.body 
-    let id
-    products.getAll().then(products => {
-        if (products.length == 0) {
-            id = 1
-        }else{
-            id = products.length +1
-        }    
-    })
-
-    let articulo ={ name : name, price : price, thumbnail : thumbnail} 
-    const newProduct = {...articulo, id}
-    products.save(newProduct)
-    res.redirect('/productos')
-})
-    
-productsRouter.put('/productos/:id', mdl1, (req, res)=>{
-    let { name, price, thumbnail } = req.body
-    let { id } = req.params
-    id = parseInt(id)
-    let producto = { name : name, price : price, thumbnail : thumbnail}
-
-    products.getAll().then(newProductModifi=>{
-    let obj = newProductModifi.find(obj => obj.id === parseInt(id))
-    let index = newProductModifi.indexOf(obj)
-    let productModifi = {...producto, id}
-    if (!obj) {
-        res.json({msg: "no se encontro el producto"})
-        }else{
-            products.remplace(productModifi, index)
-            res.json({msg: "producto modificado con exito"})
+productRoutes.post('/', mdl1, async (req, res)=>{ //crea los productos quede en el minuto 43 del video
+    console.log("entrando al post")
+    try {
+            let newObj = req.body
+            let today = new Date()
+            let creationFech = today.getFullYear() + '-' + ( today.getMonth() + 1 ) + '-' +  today.getDate()
+            const newProduct = {...newObj, creationFech}
+            let ids = await containerProducts.save(newProduct)
+            res.json(ids)         
+    } catch (error) {
+        console.log(error)
         }
     })
-})
-
-productsRouter.delete('/productos', mdl1, (req, res)=>{
-    products.deleteAll()
-})
     
-productsRouter.delete('/productos/:id', mdl1, (req, res)=>{
-    let {id} = req.params
-    products.deleteById(id)
-})
+productRoutes.put('/:id', mdl1, async (req, res)=>{//modifica los productos por su id
+    try {
+        let objToModifi = req.body
+        let {id} = req.params
+        let objACtualiced = await containerProducts.remplace(objToModifi, id)
+        res.json(objACtualiced)        
+    } catch (error) {
+        res.send(error)
+        }
+    })
+    
+productRoutes.delete('/:id', mdl1, async (req, res)=>{//elimina los productos por su id
+    try {
+        let {id} = req.params
+        let objDelet = await containerProducts.deleteById(id)        
+        res.json(objDelet)
+    } catch (error) {
+        res.send(error)
+        }
+    })
 
-module.exports = productsRouter
+    export default productRoutes;

@@ -1,13 +1,10 @@
-const fs = require('fs').promises
+import knexConection from '../options/mySqlDb.js'
 
 class ContainerCart{
-    constructor (path){
-        this.path = path
-    }
 
     async getAll (req, res){
         try {
-            const all = await fs.readFile(this.path, 'utf-8')
+            const all = await knexConection('cart')
             return JSON.parse(all)
         } catch (error) {
             const errorMsg = 'no se encontraron resultados'
