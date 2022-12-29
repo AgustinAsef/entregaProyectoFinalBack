@@ -176,3 +176,4 @@ MongoDB shell version v5.0.14
 Enter password:
 
 no pude realizar las pruebas porque no puedo ingresar con el usuario ya q no me deja escribir
+este es el amterial de un compañero, yo hice el mio con productos y funcionaba perfecto, hasta que hice la creacion del usuario y no pude entrar mas para realizar las siguientes pruebas
